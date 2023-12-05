@@ -170,9 +170,32 @@ discardAllBtn.addEventListener("click",function(e){
 })
 
 
+// 姓名空白驗證
+const checkCustomerName = document.querySelector('#customerName');
+const orderInfoMessageName = document.querySelector(`[data-message="姓名"]`);
+checkCustomerName.addEventListener('blur', function(e){
+    if(isEmpty(checkCustomerName.value)){
+    	orderInfoMessageName.style.display = 'block';
+    } else {
+    	orderInfoMessageName.style.display = 'none';
+    }
+});
+  
+// 電話驗證
+
+const checkCustomerPhone = document.querySelector('#customerPhone');
+const orderInfoMessagePhone = document.querySelector('.orderInfo-message[data-message="電話"]');
+checkCustomerPhone.addEventListener('blur', function () {
+  if (validatePhone(checkCustomerPhone.value) === false) {
+    orderInfoMessagePhone.style.display = 'block';
+  } else {
+    orderInfoMessagePhone.style.display = 'none';
+  };
+});
+
 // 信箱驗證
 const checkCustomerEmail = document.querySelector('#customerEmail');
-const orderInfoMessageEmail = document.querySelector('.orderInfo-message[data-message="Email"]');
+const orderInfoMessageEmail = document.querySelector(`[data-message="Email"]`);
 checkCustomerEmail.addEventListener('blur', function(e){
   if(validateEmail(customerEmail.value) === false){
     orderInfoMessageEmail.style.display = 'block';
@@ -181,10 +204,16 @@ checkCustomerEmail.addEventListener('blur', function(e){
   }
 });
 
-
-
-
-
+// 地址空白驗證
+const checkCustomerAddress = document.querySelector('#customerAddress');
+const orderInfoMessageAddress = document.querySelector(`[data-message="寄送地址"]`);
+checkCustomerAddress.addEventListener('blur', function(e){
+    if(isEmpty(checkCustomerAddress.value)){
+    	orderInfoMessageAddress.style.display = 'block';
+    } else {
+    	orderInfoMessageAddress.style.display = 'none';
+    }
+});
 
 // 送出訂單
 const orderInfoBtn = document.querySelector('.orderInfo-btn');
@@ -237,7 +266,7 @@ orderInfoBtn.addEventListener('click',function(e){
             document.querySelector('#customerPhone').value = '';
             document.querySelector('#customerEmail').value = '';
             document.querySelector('#customerAddress').value = '';
-            document.querySelector('#tradeWay').value = 'blank';
+            document.querySelector('#tradeWay').value = 'ATM';
             getCartList();
         })
 })
@@ -246,6 +275,11 @@ orderInfoBtn.addEventListener('click',function(e){
 function toThousands(x){
     let num = x
     return num.toLocaleString('zh-tw',{minimumFractionDigits: false});
+}
+
+// 空值驗證
+function isEmpty(str) {
+    return (!str || str.trim().length === 0);
 }
 
 // email 驗證
