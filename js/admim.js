@@ -168,7 +168,7 @@ function deleteOrderItem(userId){
   axios
     .delete(`${url}/orders/${userId}`,{
       headers:{
-        'authorization':token,
+        'Authorization':token,
       }
     })
     .then(function(response){
@@ -181,10 +181,9 @@ function deleteOrderItem(userId){
 const discardAllBtn = document.querySelector('.discardAllBtn');
 discardAllBtn.addEventListener('click',function(e){
   e.preventDefault();
-  axios
-    .delete(`${url}/orders`,{
+  axios.delete(`${url}/orders`,{
       headers:{
-        'authorization':token,
+        'Authorization':token,
       }
     })
     .then(function(response){
