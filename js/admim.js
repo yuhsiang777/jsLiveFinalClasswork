@@ -188,7 +188,6 @@ discardAllBtn.addEventListener('click',function(e){
       }
     })
     .then(function(response){
-      response.preventDefault();
       alert('購物車產品已全部清空');
       getOrderList();
     })  
