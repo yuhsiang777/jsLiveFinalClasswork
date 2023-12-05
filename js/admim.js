@@ -1,9 +1,7 @@
 const url = `https://livejs-api.hexschool.io/api/livejs/v1/admin/${api_path}`;
 
-
 function init(){
   getOrderList();
-  // renderC3();
 }
 
 init();
@@ -11,6 +9,61 @@ init();
 let orderData = [];
 const orderList = document.querySelector('.js-orderList');
 
+function renderC3(){
+  // 物件資料收集
+  let obj = {};
+  orderData.forEach(function(item){
+    item.products.forEach(function(productsItem){
+      if(obj[productsItem.title] == undefined){
+        obj[productsItem.title] = productsItem.price * productsItem.quantity;
+      }else{
+        obj[productsItem.title] += productsItem.price * productsItem.quantity;
+      }
+    })
+  })
+  console.log(obj);
+
+  // 資料關聯
+  let originAry = Object.keys(obj);
+  console.log(originAry);
+
+  let rankSortAry = [];
+  originAry.forEach(function(item){
+    let ary = [];
+    ary.push(item);
+    ary.push(obj[item]);
+    rankSortAry.push(ary);
+  })
+  console.log(rankSortAry);
+
+  rankSortAry.sort(function(a,b){
+    return b[1] - a[1];
+  })
+
+  if(rankSortAry.length > 3){
+    let otherTotal = 0;
+    rankSortAry.forEach(function(item,num){
+      if(num > 2){
+        otherTotal += rankSortAry[num][1];
+      }
+    })
+    rankSortAry.splice(3,rankSortAry.length - 1);
+    rankSortAry.push(['其他',otherTotal]);
+  }
+
+  let chart = c3.generate({
+    bindto: '#chart', // HTML 元素綁定
+    data: {
+        type: "pie",
+        columns: rankSortAry,
+        colors:{
+            pattern:["#301E5F","#5434A7","#9D7FEA","#DACBFF"]
+        }
+    },
+  });
+}
+
+// 取得訂單列表
 function getOrderList(){
   axios
     .get(`${url}/orders`,{
@@ -20,7 +73,6 @@ function getOrderList(){
     })
     .then(function(response){
       orderData = response.data.orders;
-      
       let str = '';
       orderData.forEach(function(item){
         // 時間狀態字串
@@ -86,6 +138,7 @@ orderList.addEventListener('click',function(e){
   }
 })
 
+// 修改訂單狀態
 function putOrderItem(statuses,userId){
   let newStatuses;
   if(statuses == true){
@@ -110,6 +163,7 @@ function putOrderItem(statuses,userId){
     })
 }
 
+// 刪除特定訂單
 function deleteOrderItem(userId){
   axios
     .delete(`${url}/orders/${userId}`,{
@@ -123,31 +177,19 @@ function deleteOrderItem(userId){
     })  
 }
 
-function renderC3(){
-  console.log(orderData);
-  let total = {};
-  orderData.forEach(function(item){
-    item.products.forEach(function(productsItem){
-      if(total[productsItem.category]){}
-    })
-  })
-  // C3.js
-  let chart = c3.generate({
-  bindto: '#chart', // HTML 元素綁定
-  data: {
-      type: "pie",
-      columns: [
-      ['Louvre 雙人床架', 1],
-      ['Antony 雙人床架', 2],
-      ['Anty 雙人床架', 3],
-      ['其他', 4],
-      ],
-      colors:{
-          "Louvre 雙人床架":"#DACBFF",
-          "Antony 雙人床架":"#9D7FEA",
-          "Anty 雙人床架": "#5434A7",
-          "其他": "#301E5F",
+// 刪除全部訂單
+const discardAllBtn = document.querySelector('.discardAllBtn');
+discardAllBtn.addEventListener('click',function(e){
+  e.preventDefault();
+  axios
+    .delete(`${url}/orders`,{
+      headers:{
+        'authorization':token,
       }
-    },
-  });
-}
+    })
+    .then(function(response){
+      response.preventDefault();
+      alert('購物車產品已全部清空');
+      getOrderList();
+    })  
+})
